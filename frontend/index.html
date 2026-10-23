@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyArchive Downloader</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1>MyArchive Downloader</h1>
+          <p class="subtitle">Motor de Media Universal — 1.750+ Sites Suportados (REST + WebSocket)</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="api-status" class="pill pill-idle">A ligar…</span>
+        <button id="btn-history-toggle" class="btn btn-ghost btn-sm" type="button">Histórico (<span id="history-badge">0</span>)</button>
+        <button id="btn-settings" class="btn btn-ghost" type="button">Definições</button>
+      </div>
+    </header>
+
+    <!-- ================= Painel de definições ================= -->
+    <section id="settings-panel" class="card settings hidden" aria-hidden="true">
+      <div class="settings-grid">
+        <label class="field">
+          <span>Base da API</span>
+          <input id="inp-api-base" type="url" placeholder="http://localhost:8000/api" />
+        </label>
+        <label class="field">
+          <span>API key (opcional)</span>
+          <input id="inp-api-key" type="password" placeholder="deixado em branco = sem auth" />
+        </label>
+        <label class="field field-small">
+          <span>Formato de áudio</span>
+          <select id="inp-audio-format">
+            <option value="mp3">MP3</option>
+            <option value="m4a">M4A</option>
+            <option value="opus">Opus</option>
+            <option value="wav">WAV</option>
+          </select>
+        </label>
+        <label class="field field-small">
+          <span>Extração direta do browser</span>
+          <select id="inp-cookie-browser">
+            <option value="">Não usar cookies do browser</option>
+            <option value="chrome">Google Chrome</option>
+            <option value="edge">Microsoft Edge</option>
+            <option value="firefox">Mozilla Firefox</option>
+            <option value="brave">Brave</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- Gestor avançado de cookies (cookies.txt / Netscape / Get cookies.txt LOCALLY) -->
+      <div class="cookies-manager-card">
+        <div class="cookies-manager-header">
+          <div>
+            <strong>🍪 Ficheiro de Cookies (cookies.txt)</strong>
+            <p class="cookies-desc">
+              Carrega o teu ficheiro <code>cookies.txt</code> (exportado da extensão <em>Get cookies.txt LOCALLY</em> ou <em>Cookie-Editor</em>). Permite contornar verificações da Cloudflare (Pixabay), logins e restrições de idade (YouTube, Instagram, etc.).
+            </p>
+          </div>
+          <div id="cookies-status-badge" class="cookies-badge">
+            <span class="status-dot"></span>
+            <span id="cookies-status-label">A verificar...</span>
+          </div>
+        </div>
+
+        <div class="cookies-upload-zone">
+          <input type="file" id="inp-cookie-file" accept=".txt,.json" class="hidden" />
+          <button type="button" id="btn-browse-cookies" class="btn btn-secondary">
+            📁 Carregar ficheiro cookies.txt
+          </button>
+          <button type="button" id="btn-toggle-paste-cookies" class="btn btn-ghost">
+            ✏️ Colar texto
+          </button>
+          <button type="button" id="btn-delete-cookies" class="btn btn-danger hidden" title="Apagar cookies guardados">
+            🗑️ Remover Cookies
+          </button>
+          <span id="cookies-file-name" class="cookies-filename"></span>
+        </div>
+
+        <div id="cookies-paste-box" class="cookies-paste-box hidden">
+          <textarea id="txt-cookie-content" placeholder="Cole aqui o conteúdo gerado pela extensão Get cookies.txt LOCALLY ou JSON..."></textarea>
+          <div class="cookies-paste-actions">
+            <button type="button" id="btn-save-cookie-text" class="btn btn-primary btn-sm">Guardar Cookies</button>
+            <button type="button" id="btn-cancel-cookie-text" class="btn btn-ghost btn-sm">Cancelar</button>
+          </div>
+        </div>
+
+        <div id="cookies-domains-list" class="cookies-domains hidden"></div>
+      </div>
+
+      <!-- Gestor e Bot de Atualizações do Motor Universal -->
+      <div class="engine-manager-card">
+        <div class="engine-manager-header">
+          <div>
+            <strong>⚡ Motor Universal & Atualizações Contínuas</strong>
+            <p class="engine-desc">
+              Mantém o suporte a mais de 1.750 sites sempre funcional. O bot interno transfere melhorias da comunidade, adapta-as automaticamente e valida a compatibilidade sem interromper a aplicação.
+            </p>
+          </div>
+          <div id="engine-status-badge" class="cookies-badge">
+            <span class="status-dot"></span>
+            <span id="engine-status-label">Versão: a carregar…</span>
+          </div>
+        </div>
+
+        <div class="engine-actions-zone">
+          <button type="button" id="btn-check-engine" class="btn btn-secondary">
+            🔍 Verificar Novas Versões
+          </button>
+          <button type="button" id="btn-update-engine" class="btn btn-primary hidden">
+            ⚡ Atualizar Motor Agora
+          </button>
+          <button type="button" id="btn-rollback-engine" class="btn btn-ghost hidden" title="Restaurar cópia de segurança anterior">
+            ↺ Reverter Versão
+          </button>
+          <span id="engine-action-status" class="hint"></span>
+        </div>
+
+        <div id="engine-progress-box" class="engine-progress-box hidden">
+          <div class="progress-head">
+            <span id="engine-progress-step" class="progress-phase">A preparar atualização…</span>
+            <span id="engine-progress-percent" class="progress-percent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="engine-progress-bar" class="progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint">Os cookies são guardados localmente no servidor e usados para autenticar pedidos aos domínios correspondentes de forma segura.</p>
+      <div class="settings-actions">
+        <button id="btn-save-settings" class="btn btn-primary" type="button">Guardar</button>
+        <button id="btn-close-settings" class="btn btn-ghost" type="button">Fechar</button>
+      </div>
+    </section>
+
+    <!-- ================= Passo 1: URL ================= -->
+    <section class="card">
+      <div class="card-head">
+        <h2><span class="step">1</span> Fonte do Vídeo / Áudio</h2>
+      </div>
+      <form id="form-extract" class="url-row" autocomplete="off">
+        <div class="url-input-wrap">
+          <span class="url-icon" aria-hidden="true">🔗</span>
+          <input
+            id="inp-url"
+            type="url"
+            name="url"
+            placeholder="Cole aqui o URL do vídeo ou áudio (YouTube, TikTok, Instagram, Twitter/X, Reddit, Twitch…)"
+            required
+            spellcheck="false"
+          />
+          <span id="platform-badge" class="platform-badge hidden"></span>
+          <button id="btn-paste" class="btn-paste" type="button" title="Colar da área de transferência">📋 Colar</button>
+        </div>
+        <button id="btn-extract" class="btn btn-primary" type="submit">
+          <span class="btn-label">Analisar</span>
+        </button>
+      </form>
+
+      <!-- Chips de plataformas populares suportadas -->
+      <div class="platform-chips" id="platform-chips">
+        <span class="chips-label">Plataformas:</span>
+        <button type="button" class="chip chip-yt" data-site="youtube">YouTube</button>
+        <button type="button" class="chip chip-tt" data-site="tiktok">TikTok</button>
+        <button type="button" class="chip chip-ig" data-site="instagram">Instagram</button>
+        <button type="button" class="chip chip-x" data-site="twitter">X / Twitter</button>
+        <button type="button" class="chip chip-rd" data-site="reddit">Reddit</button>
+        <button type="button" class="chip chip-tw" data-site="twitch">Twitch</button>
+        <button type="button" class="chip chip-sc" data-site="soundcloud">SoundCloud</button>
+        <button type="button" class="chip chip-fb" data-site="facebook">Facebook</button>
+        <button type="button" class="chip chip-pin" data-site="pinterest">Pinterest</button>
+        <button type="button" class="chip chip-vm" data-site="vimeo">Vimeo</button>
+        <button type="button" class="chip chip-all" data-site="all">+1.750 Sites</button>
+      </div>
+      <p id="extract-hint" class="hint">Compatibilidade universal: YouTube · TikTok · Twitter / X · Instagram · Reddit · Twitch · SoundCloud · Facebook · Pinterest · Bilibili · Vimeo · Dailymotion · France TV · HLS (.m3u8) · DASH (.mpd) · Streams diretos e +1.750 sites integrados nativamente.</p>
+    </section>
+
+    <!-- ================= Passo 2: O que queres guardar ================= -->
+    <section id="formats-card" class="card hidden">
+      <div class="card-head">
+        <h2><span class="step">2</span> O que queres guardar</h2>
+        <div class="media-tags">
+          <span id="media-platform-badge" class="badge-platform"></span>
+          <span id="media-meta" class="media-meta"></span>
+        </div>
+      </div>
+
+      <div id="media-preview" class="media-preview hidden">
+        <img id="media-thumb" alt="" />
+        <div class="media-info">
+          <strong id="media-title"></strong>
+          <span id="media-subtitle" class="muted"></span>
+        </div>
+      </div>
+
+      <div class="mode-block">
+        <div class="mode-row" role="radiogroup" aria-label="Modo de download">
+          <label class="mode mode-auto">
+            <input type="radio" name="mode" value="auto" checked />
+            <span class="mode-pill"><span class="mode-glyph" aria-hidden="true">✦</span> Automático</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="video" />
+            <span class="mode-pill">Vídeo</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="both" />
+            <span class="mode-pill">Vídeo + áudio</span>
+          </label>
+          <label class="mode">
+            <input type="radio" name="mode" value="audio" />
+            <span class="mode-pill">Só áudio</span>
+          </label>
+        </div>
+        <p id="mode-desc" class="mode-desc"></p>
+      </div>
+
+      <!-- Presets de qualidade rápida -->
+      <div class="quality-presets">
+        <span class="preset-label">Atalhos rápidos:</span>
+        <button type="button" id="btn-preset-max" class="btn btn-sm btn-ghost">★ Máxima Qualidade</button>
+        <button type="button" id="btn-preset-1080" class="btn btn-sm btn-ghost">1080p Full HD</button>
+        <button type="button" id="btn-preset-720" class="btn btn-sm btn-ghost">720p HD</button>
+        <button type="button" id="btn-preset-audio" class="btn btn-sm btn-ghost">🎵 Converter p/ Áudio</button>
+      </div>
+
+      <div class="format-groups">
+        <div class="format-group">
+          <h3>Vídeo</h3>
+          <div id="video-format-list" class="format-list" role="radiogroup" aria-label="Formato de vídeo" data-empty="Nenhum formato de vídeo disponível."></div>
+        </div>
+
+        <div class="format-group">
+          <h3>Áudio</h3>
+          <div id="audio-format-list" class="format-list" role="radiogroup" aria-label="Faixa de áudio" data-empty="Nenhuma faixa de áudio disponível."></div>
+        </div>
+
+        <div class="format-group">
+          <h3>Legendas</h3>
+          <div id="subtitle-list" class="format-list" role="radiogroup" aria-label="Faixa de legenda" data-empty="Nenhuma faixa de legenda disponível."></div>
+        </div>
+      </div>
+
+      <div id="summary-panel" class="summary"></div>
+
+      <div class="format-actions">
+        <button id="btn-download" class="btn btn-primary" type="button" disabled>
+          <span class="btn-label">Descarregar</span>
+        </button>
+        <span id="selection-hint" class="hint"></span>
+      </div>
+    </section>
+
+    <!-- ================= Passo 3: Download ================= -->
+    <section id="progress-card" class="card hidden">
+      <div class="card-head">
+        <h2><span class="step">3</span> Progresso do Download</h2>
+        <button id="btn-cancel" class="btn btn-danger btn-sm hidden" type="button">Cancelar</button>
+      </div>
+
+      <div class="progress-block">
+        <div class="progress-head">
+          <span id="progress-phase" class="progress-phase">A preparar…</span>
+          <span id="progress-percent" class="progress-percent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progress-bar" class="progress-bar" style="width:0%"></div>
+          <div id="progress-bar-indeterminate" class="progress-bar progress-bar-indeterminate hidden"></div>
+        </div>
+        <div class="progress-stats">
+          <span id="progress-size">—</span>
+          <span id="progress-speed">—</span>
+          <span id="progress-eta">—</span>
+        </div>
+        <p id="progress-message" class="hint"></p>
+      </div>
+
+      <!-- Caixa de Resultado Final e Player Integrado -->
+      <div id="result-box" class="result hidden">
+        <div class="result-top">
+          <div class="result-icon">✓</div>
+          <div class="result-body">
+            <strong id="result-filename"></strong>
+            <span id="result-size" class="muted"></span>
+            <ul id="result-warnings" class="warnings hidden"></ul>
+          </div>
+        </div>
+
+        <!-- Leitor de vídeo/áudio inline para visualização imediata -->
+        <div id="result-player-container" class="result-player hidden"></div>
+
+        <div class="result-actions">
+          <a id="result-link" class="btn btn-primary" download>💾 Guardar Ficheiro</a>
+          <button id="btn-copy-link" class="btn btn-ghost" type="button">🔗 Copiar Link</button>
+          <button id="btn-new-download" class="btn btn-ghost" type="button">➕ Novo Download</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= Histórico de Downloads da Sessão ================= -->
+    <section id="history-card" class="card hidden">
+      <div class="card-head">
+        <h2>Histórico da Sessão (<span id="history-count">0</span>)</h2>
+        <button id="btn-clear-history" class="btn btn-ghost btn-sm" type="button">Limpar Histórico</button>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </section>
+
+    <!-- ================= Registo de Eventos (Log) ================= -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Registo em Tempo Real</h2>
+        <button id="btn-clear-log" class="btn btn-ghost btn-sm" type="button">Limpar</button>
+      </div>
+      <pre id="log" class="log" aria-live="polite"></pre>
+    </section>
+  </div>
+
+  <!-- ================= Notificações Toast ================= -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

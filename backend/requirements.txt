@@ -1,0 +1,40 @@
+# ---------------------------------------------------------------------------
+# MyArchive Downloader — dependências de runtime
+# ---------------------------------------------------------------------------
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30
+httpx>=0.27,<1.0
+pydantic>=2.7,<3.0
+pydantic-settings>=2.3,<3.0
+python-multipart>=0.0.9
+websockets>=12.0
+cryptography>=42.0
+browser-cookie3>=0.20.1
+
+# Descodificadores de compressão. O YouTube responde em Brotli: sem estas
+# bibliotecas o httpx devolve os bytes comprimidos em vez do JSON.
+brotli>=1.1
+zstandard>=0.22
+
+# ---------------------------------------------------------------------------
+# Dependências do motor de extracção incorporado (yt-dlp embedded)
+# Estes pacotes são usados directamente pelo código do motor incorporado
+# em app/core/extractors/ — sem instalar yt-dlp como dependência pip.
+# ---------------------------------------------------------------------------
+
+# HTTP clássico usado por vários extractores internos
+requests>=2.31
+urllib3>=2.0
+
+# Metadados de áudio (tags ID3, Vorbis, MP4, FLAC, etc.)
+mutagen>=1.47
+
+# Crypto AES para extractores com DRM básico (Widevine não suportado)
+pycryptodomex>=3.19
+
+# ---------------------------------------------------------------------------
+# Desenvolvimento / testes
+# ---------------------------------------------------------------------------
+pytest>=8.0
+pytest-asyncio>=0.23
+anyio>=4.0

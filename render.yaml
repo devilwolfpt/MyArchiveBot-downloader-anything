@@ -1,0 +1,27 @@
+# ---------------------------------------------------------------------------
+# MyArchive Downloader — Blueprint de Deploy Render.com
+# https://render.com/docs/blueprint-spec
+# ---------------------------------------------------------------------------
+services:
+  - type: web
+    name: myarchive-downloader
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt # ou oregon / ohio / singapore
+    healthCheckPath: /api/health
+    envVars:
+      - key: MAD_ENV
+        value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: MAD_LOG_LEVEL
+        value: info
+      - key: MAD_DEBUG
+        value: "false"
+      - key: MAD_ALLOWED_ORIGINS
+        value: "*"
+      - key: MAD_JOB_TTL_SECONDS
+        value: "1800"
+      - key: MAD_MAX_CONCURRENT_JOBS
+        value: "4"

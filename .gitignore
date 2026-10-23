@@ -1,0 +1,44 @@
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Bytecode Python e caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Dados de execução e downloads locais
+data/
+downloads/
+backend/data/
+*.mp4
+*.webm
+*.mkv
+*.mp3
+*.m4a
+*.aria2
+*.part
+*.ytdl
+
+# Backups e staging do bot de atualização
+backend/app/core/extractors/.backups/
+backend/app/core/extractors/.staging/
+.staging/
+.smoke/
+yt-dlp-master/
+*.zip
+*.tar.gz
+
+# Ficheiros de ambiente e chaves locais
+.env
+.env.local
+backend/.env
+
+# IDEs e sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
