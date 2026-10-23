@@ -435,7 +435,14 @@ aplicável (na UE, a.directiva InfoSocmul e as excepções previstas na
 legislação nacional). Não use este motor para distribuir conteúdo protegido
 sem autorização. Qualquer uso irresponsavel a culpa não será de nenhum desenvolvedor da APP em questão.
 
-**Esta APP destinou-se a fins educativos.** 
+**Esta APP destinou-se a fins educativos.** Isto é uma ferramenta de teste de segurança do site, mesmo sendo criada para fazer download de videos.
+
+
+Esta ferramenta foi desenvolvida para efeitos de processamento de URLs e conteúdos multimédia. O **utilizador** é o único responsável por garantir que qualquer pedido efetuado respeita escrupulosamente os Termos de Serviço dos sites de origem, as diretivas `robots.txt` e a legislação de direitos de autor aplicável (na União Europeia, a Diretiva InfoSoc e as exceções previstas na legislação nacional).
+
+Este motor não deve ser utilizado para descarregar ou distribuir conteúdos protegidos sem a devida autorização dos titulares. Os **criadores e programadores** da aplicação declinam toda e qualquer responsabilidade **civil** ou **criminal** decorrente do uso **indevido** ou **ilícito** da ferramenta.
+
+Esta aplicação destina-se estritamente a fins educativos, de investigação técnica e de auditoria de arquitetura de software.
 
 ---
 
