@@ -337,9 +337,9 @@ Verificação ponta-a-ponta contra o YouTube:
 python scripts/yt_check.py --format 137
 ```
 
-### 5.6 Notas sobre o France TV
+### 5.6 Notas sobre o France TV e outros serviços que necessitam de VPN
 
-* O conteúdo do France TV é **restrito geograficamente a França**. Quando o IP
+* Um exemplo de serviço que tem **restrito geograficamente a França** é O conteúdo do France TV. Quando o IP
   de saída está fora de França, o CDN (Akamai) recusa o manifesto e o serviço
   devolve **HTTP 451** com uma mensagem explícita — não é um bug do motor.
 * Para descarregar, configure um proxy com IP francês em `MAD_PROXY_URL`
