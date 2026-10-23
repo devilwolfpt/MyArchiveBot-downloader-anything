@@ -428,12 +428,14 @@ Resumo da opção recomendada para produção:
 
 ## 9. Nota legal
 
-Esta ferramenta descarrega conteúdo a partir de URLs. Quem **opera** o serviço
+Esta ferramenta descarrega conteúdo a partir de URLs. Quem **usa** o serviço
 é responsável por garantir que os pedidos respeitam os termos de uso dos
 sites de origem, as-directivas `robots.txt` e a legislação de copyrights
 aplicável (na UE, a.directiva InfoSocmul e as excepções previstas na
 legislação nacional). Não use este motor para distribuir conteúdo protegido
-sem autorização.
+sem autorização. Qualquer uso irresponsavel a culpa não será de nenhum desenvolvedor da APP em questão.
+
+**Esta APP destinou-se a fins educativos.** 
 
 ---
 
